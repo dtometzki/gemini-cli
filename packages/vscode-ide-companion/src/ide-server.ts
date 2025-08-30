@@ -234,6 +234,12 @@ export class IDEServer {
         if (address && typeof address !== 'string') {
           this.port = address.port;
           this.log(`IDE server listening on port ${this.port}`);
+
+          // Forwards the port programmatically in VS Code.
+          vscode.commands.executeCommand('workbench.action.forwardPort', [
+            this.port,
+          ]);
+
           await writePortAndWorkspace(
             context,
             this.port,
