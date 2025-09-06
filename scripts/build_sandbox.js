@@ -61,7 +61,6 @@ try {
     .trim();
 } catch (e) {
   console.warn('ERROR: could not detect sandbox container command');
-  console.error(e);
   process.exit(process.env.CI ? 1 : 0);
 }
 
@@ -187,12 +186,10 @@ function buildImage(imageName, dockerfile) {
   }
 }
 
-if (baseImage && baseDockerfile) {
-  buildImage(baseImage, baseDockerfile);
-}
-
 if (customDockerfile && customImage) {
   buildImage(customImage, customDockerfile);
+} else if (baseImage && baseDockerfile) {
+  buildImage(baseImage, baseDockerfile);
 }
 
 execSync(`${sandboxCommand} image prune -f`, { stdio: 'ignore' });
