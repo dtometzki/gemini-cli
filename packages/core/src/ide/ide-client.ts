@@ -496,7 +496,7 @@ export class IdeClient {
   private async establishHttpConnection(port: string): Promise<boolean> {
     let transport: StreamableHTTPClientTransport | undefined;
     try {
-      logger.debug('Attempting to connect to IDE via HTTP SSE');
+      //logger.debug('Attempting to connect to IDE via HTTP SSE');
       this.client = new Client({
         name: 'streamable-http-client',
         // TODO(#3487): use the CLI version here.
