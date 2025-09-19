@@ -22,8 +22,7 @@
     "typecheck": "tsc --noEmit"
   },
   "files": [
-    "dist",
-    "npm-shrinkwrap.json"
+    "dist"
   ],
   "config": {
     "sandboxImageUri": "hub.docker.com/repository/docker/dtometzki/sandbox:latest"
