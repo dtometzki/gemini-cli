@@ -41,11 +41,13 @@ const argv = yargs(hideBin(process.argv))
   .option('f', {
     alias: 'dockerfile',
     type: 'string',
+    default: 'Dockerfile',
     description: 'use <dockerfile> for custom image',
   })
   .option('i', {
     alias: 'image',
     type: 'string',
+    default: cliPkgJson.config.sandboxImageUri,
     description: 'use <image> name for custom image',
   })
   .option('output-file', {
@@ -73,12 +75,10 @@ if (sandboxCommand === 'sandbox-exec') {
 
 console.log(`using ${sandboxCommand} for sandboxing`);
 
-const baseImage = cliPkgJson.config.sandboxImageUri;
-const customImage = argv.i;
-const baseDockerfile = 'Dockerfile';
-const customDockerfile = argv.f;
+const image = argv.i;
+const dockerFile = argv.f;
 
-if (!baseImage?.length) {
+if (!image.length) {
   console.warn(
     'No default image tag specified in gemini-cli/packages/cli/package.json',
   );
@@ -159,7 +159,7 @@ function buildImage(imageName, dockerfile) {
     execSync(
       `${sandboxCommand} build ${buildCommandArgs} ${
         process.env.BUILD_SANDBOX_FLAGS || ''
-      } --build-arg CLI_VERSION_ARG=${npmPackageVersion} -f "${dockerfile}" -t "${imageName}" .`,
+      } --build-arg CLI_VERSION_ARG=${npmPackageVersion} -f "${dockerfile}" -t "${finalImageName}" .`,
       { stdio: buildStdout, shell: shellToUse },
     );
     console.log(`built ${finalImageName}`);
@@ -186,10 +186,6 @@ function buildImage(imageName, dockerfile) {
   }
 }
 
-if (customDockerfile && customImage) {
-  buildImage(customImage, customDockerfile);
-} else if (baseImage && baseDockerfile) {
-  buildImage(baseImage, baseDockerfile);
-}
+buildImage(image, dockerFile);
 
 execSync(`${sandboxCommand} image prune -f`, { stdio: 'ignore' });
