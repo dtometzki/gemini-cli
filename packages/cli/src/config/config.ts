@@ -396,6 +396,15 @@ export async function loadHierarchicalGeminiMemory(
   );
 }
 
+export function isDebugMode(argv: CliArgs): boolean {
+  return (
+    argv.debug ||
+    [process.env['DEBUG'], process.env['DEBUG_MODE']].some(
+      (v) => v === 'true' || v === '1',
+    )
+  );
+}
+
 export async function loadCliConfig(
   settings: Settings,
   extensions: Extension[],
@@ -403,18 +412,14 @@ export async function loadCliConfig(
   argv: CliArgs,
   cwd: string = process.cwd(),
 ): Promise<Config> {
-  const debugMode =
-    argv.debug ||
-    [process.env['DEBUG'], process.env['DEBUG_MODE']].some(
-      (v) => v === 'true' || v === '1',
-    ) ||
-    false;
+  const debugMode = isDebugMode(argv);
+
   const memoryImportFormat = settings.context?.importFormat || 'tree';
 
   const ideMode = settings.ide?.enabled ?? false;
 
   const folderTrust = settings.security?.folderTrust?.enabled ?? false;
-  const trustedFolder = isWorkspaceTrusted(settings) ?? true;
+  const trustedFolder = isWorkspaceTrusted(settings)?.isTrusted ?? true;
 
   const allExtensions = annotateActiveExtensions(
     extensions,
@@ -667,6 +672,8 @@ export async function loadCliConfig(
       format: (argv.outputFormat ?? settings.output?.format) as OutputFormat,
     },
     useModelRouter,
+    enableMessageBusIntegration:
+      settings.tools?.enableMessageBusIntegration ?? false,
   });
 }
 
