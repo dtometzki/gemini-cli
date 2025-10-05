@@ -107,6 +107,14 @@ function sendIdeContextUpdateNotification(
     params: ideContext,
   });
 
+  log(
+    `Sending IDE context update notification: ${JSON.stringify(
+      notification,
+      null,
+      2,
+    )}`,
+  );
+
   transport.send(notification);
 }
 
